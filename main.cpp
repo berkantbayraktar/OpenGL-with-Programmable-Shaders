@@ -11,13 +11,14 @@ GLuint idVertexShader;
 GLuint idJpegTexture;
 GLuint idMVPMatrix;
 
-GLuint MVPID;
+GLuint MVP;
+GLuint vertexbuffer;
 
 
 int widthTexture, heightTexture;
 
 void setCamera();
-void drawTriangles();
+void drawTriangles(GLfloat buffer[]);
 
 static void errorCallback(int error,
   const char * description) {
@@ -57,7 +58,7 @@ int main(int argc, char * argv[]) {
     exit(-1);
   }
 
-  // Dark blue background
+  // White background
 	glClearColor(1,1,1,1);
 
 	GLuint VertexArrayID;
@@ -69,16 +70,23 @@ int main(int argc, char * argv[]) {
   glUseProgram(idProgramShader);
   initTexture(argv[1], & widthTexture, & heightTexture);
 
-  static const GLfloat g_vertex_buffer_data[] = { 
-		-1.0f, -1.0f, 0.0f,
-		 1.0f, -1.0f, 0.0f,
-		 0.0f,  1.0f, 0.0f,
-	};
+  static GLfloat g_vertex_buffer_data[] = {
+    0 , 0, 0,
+    1,1,1,
+    -1 ,-1 ,-1,
+    0 ,0 ,0 ,
+    -1, -1 ,-1,
+    0,1,-1
+  };
 
-	GLuint vertexbuffer;
+  //drawTriangles(g_vertex_buffer_data);
+	
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+  
+		
 
   // MAIN LOOP
   while (!glfwWindowShouldClose(win)) {
@@ -86,10 +94,11 @@ int main(int argc, char * argv[]) {
     // Clear the screen
 		glClear( GL_COLOR_BUFFER_BIT );
 
-		// 1rst attribute buffer : vertices
+    // 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
+
+    glVertexAttribPointer(
 			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
 			GL_FLOAT,           // type
@@ -97,6 +106,7 @@ int main(int argc, char * argv[]) {
 			0,                  // stride
 			(void*)0            // array buffer offset
 		);
+		
 
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
@@ -135,24 +145,40 @@ void setCamera()
 }
 
 // Triangles clock-wise direction
-void drawTriangles()
-{
-  glColor3f(0,1,0);
-  glBegin(GL_TRIANGLES);
-  for(int i = 0  ; i < widthTexture ; i++)
-  {
-    for(int j = 0 ; j < heightTexture; j++)
-    { 
-      // First triangle
-      glVertex3f(i , 0 , j);
-      glVertex3f(i + 1 , 0 , j);
-      glVertex3f(i , 0 , j + 1);
-      
-      // Second triangle
-      glVertex3f(i + 1 , 0 , j + 1);
-      glVertex3f(i + 1 , 0 , j);
-      glVertex3f(i , 0 , j + 1);
+void drawTriangles(GLfloat buffer[])
+{ 
+  float x_coord = 0;
+  float y_coord = 0;
+  for(int i = 0  ; i < 1 ; i++)
+  { 
+    x_coord = i * 2 / widthTexture;
+    for(int j = 0 ; j < 1; j++)
+    {   
+        y_coord = j * 2 /heightTexture;
+
+        buffer[i * heightTexture * 18 + j * 18] = x_coord - 1;
+        buffer[i * heightTexture * 18 + j * 18 + 1] = 0;
+        buffer[i * heightTexture * 18 + j * 18 + 2] = y_coord - 1;
+
+        buffer[i * heightTexture * 18 + j * 18 + 3] = x_coord - 1;
+        buffer[i * heightTexture * 18 + j * 18 + 4] = 0;
+        buffer[i * heightTexture * 18 + j * 18 + 5] = y_coord + 0.5 * heightTexture - 1;
+        
+        buffer[i * heightTexture * 18 + j * 18 + 6] = x_coord + 0.5 * widthTexture - 1;
+        buffer[i * heightTexture * 18 + j * 18 + 7] = 0 ;
+        buffer[i * heightTexture * 18 + j * 18 + 8] = y_coord + 0.5 * heightTexture - 1;
+        
+        buffer[i * heightTexture * 18 + j * 18 + 9] = x_coord - 1;
+        buffer[i * heightTexture * 18 + j * 18 + 10] = 0 ;
+        buffer[i * heightTexture * 18 + j * 18 + 11] = y_coord - 1;
+        
+        buffer[i * heightTexture * 18 + j * 18 + 12] = x_coord + 0.5 * widthTexture - 1;
+        buffer[i * heightTexture * 18 + j * 18 + 13] = 0 ;
+        buffer[i * heightTexture * 18 + j * 18 + 14] = y_coord + 0.5 * heightTexture - 1;
+        
+        buffer[i * heightTexture * 18 + j * 18 + 15] = x_coord + 0.5 * widthTexture - 1;
+        buffer[i * heightTexture * 18 + j * 18 + 16] = 0 ;
+        buffer[i * heightTexture * 18 + j * 18 + 17] = y_coord - 1;
     }
   }
-  glEnd();
 }
