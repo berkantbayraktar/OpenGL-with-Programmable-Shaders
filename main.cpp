@@ -86,9 +86,6 @@ int main(int argc, char * argv[]) {
     // Clear the screen
 		glClear( GL_COLOR_BUFFER_BIT );
 
-		// Use our shader
-		glUseProgram(idProgramShader);
-
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
