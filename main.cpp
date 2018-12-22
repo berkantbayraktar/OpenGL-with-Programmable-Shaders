@@ -65,18 +65,16 @@ int main(int argc, char * argv[]) {
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-
+  
   initShaders();
   glUseProgram(idProgramShader);
   initTexture(argv[1], & widthTexture, & heightTexture);
 
-  static GLfloat g_vertex_buffer_data[] = {
-    0 , 0, 0,
-    1,1,1,
-    -1 ,-1 ,-1,
-    0 ,0 ,0 ,
-    -1, -1 ,-1,
-    0,1,-1
+  static const GLfloat g_vertex_buffer_data[] = {
+      -1.0f , -1.0f , 0.0f,
+      1.0f , -1.0f , 0.0f,
+      0.0f , 1.0f, 0.0f
+   
   };
 
   //drawTriangles(g_vertex_buffer_data);
