@@ -152,7 +152,7 @@ void setCamera()
   
   View = glm::lookAt(
     cameraPosition, // Camera position
-    glm::vec3(cameraPosition + glm::vec3(0,0,1) * 0.1f), // and looks to the z direction
+    glm::vec3(cameraPosition + glm::vec3(0,0,1)), // and looks to the z direction
     glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
 
