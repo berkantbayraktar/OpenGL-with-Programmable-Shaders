@@ -144,7 +144,7 @@ void setCamera()
   , 1.0f , 0.1f, 100.0f);
   
   View = glm::lookAt(
-    glm::vec3(0 , 0 , 0 /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
+    glm::vec3(0.5 , 0.1 , -0.25 /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
     glm::vec3(0,0,1), // and looks to the z direction
     glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
@@ -177,25 +177,25 @@ void drawTriangles(GLfloat buffer[])
 
 
         buffer[i * heightTexture * 12 + j *12 ] = x_coord - 1;
-        buffer[i * heightTexture * 12 + j * 12 + 1] = y_coord -1 + 2.0/heightTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 2] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 1] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 2] = y_coord -1 + 2.0/heightTexture;
 
 
         buffer[i * heightTexture * 12 + j * 12 + 3] = x_coord - 1;
-        buffer[i * heightTexture * 12 + j * 12 + 4] = y_coord - 1;
-        buffer[i * heightTexture * 12 + j * 12 + 5] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 4] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 5] = y_coord - 1;
 
         
         
         buffer[i * heightTexture * 12 + j * 12 + 6] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 7] = y_coord -1 + 2.0/heightTexture ;
-        buffer[i * heightTexture * 12 + j * 12 + 8] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 7] =  0;
+        buffer[i * heightTexture * 12 + j * 12 + 8] = y_coord -1 + 2.0/heightTexture;
         
       
         
         buffer[i * heightTexture * 12 + j * 12 + 9] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 10] = y_coord - 1 ;
-        buffer[i * heightTexture * 12 + j * 12 + 11] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 10] = 0 ;
+        buffer[i * heightTexture * 12 + j * 12 + 11] = y_coord-1;
 
         
     }
