@@ -70,8 +70,8 @@ int main(int argc, char * argv[]) {
   glUseProgram(idProgramShader);
   initTexture(argv[1], & widthTexture, & heightTexture);
  
-  widthTexture = 40;
-  heightTexture = 40;
+  widthTexture = 400;
+  heightTexture = 400;
   GLfloat g_vertex_buffer_data[12*widthTexture*heightTexture] = {  
   };
 
@@ -105,7 +105,7 @@ int main(int argc, char * argv[]) {
 		
 
 		// Draw the triangle ! 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 6 * widthTexture *heightTexture); // 3 indices starting at 0 -> 1 triangle
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture *heightTexture); // 3 indices starting at 0 -> 1 triangle
 
 		glDisableVertexAttribArray(0);
     glfwSwapBuffers(win);
@@ -133,11 +133,16 @@ void setCamera()
   glm::mat4 Model = glm::mat4(1.0f);
 
   glm::mat4 mvp = Projection * View * Model;
-
   GLuint MVPID = glGetUniformLocation(idProgramShader,"MVP");
-
   glUniformMatrix4fv(MVPID , 1 , GL_FALSE , &mvp[0][0]);
 
+  glm::mat4 mv = View * Model;
+  GLuint MVID = glGetUniformLocation(idProgramShader,"MV");
+  glUniformMatrix4fv(MVID , 1 , GL_FALSE , &mv[0][0]);
+
+  GLuint cameraPositionID = glGetUniformLocation(idProgramShader,"cameraPosition");
+  GLfloat camPos[4] = {widthTexture / 2, widthTexture / 10, -widthTexture / 4, 1};
+  glUniform4fv(cameraPositionID, 4, &camPos[0]);
 }
 
 // Triangles clock-wise direction
