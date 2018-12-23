@@ -141,7 +141,7 @@ void setCamera()
   glUniformMatrix4fv(MVID , 1 , GL_FALSE , &mv[0][0]);
 
   GLuint cameraPositionID = glGetUniformLocation(idProgramShader,"cameraPosition");
-  GLfloat camPos[4] = {widthTexture / 2, widthTexture / 10, -widthTexture / 4, 1};
+  GLfloat camPos[4] = {widthTexture / 2.0, widthTexture / 10.0, -widthTexture / 4.0, 1};
   glUniform4fv(cameraPositionID, 4, &camPos[0]);
 }
 
