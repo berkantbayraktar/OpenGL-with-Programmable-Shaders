@@ -140,13 +140,13 @@ int main(int argc, char * argv[]) {
 
 void setCamera()
 { 
-  Projection = glm::mat4(1.0f);glm::perspective(glm::radians(45.0f)
+  Projection  =  glm::perspective(glm::radians(45.0f)
   , 1.0f , 0.1f, 100.0f);
   
   View = glm::lookAt(
-    glm::vec3(0.5 , 0.1 , -0.25 /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
+    glm::vec3(0.5 *2 -1 , 0.1*2 -1 , -0.25*2 -1 /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
     glm::vec3(0,0,1), // and looks to the z direction
-    glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+    glm::vec3(0,-1,0)  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
 
   glm::mat4 mvp = Projection * View * Model;
