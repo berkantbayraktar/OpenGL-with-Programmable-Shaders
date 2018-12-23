@@ -69,9 +69,10 @@ int main(int argc, char * argv[]) {
   initShaders();
   glUseProgram(idProgramShader);
   initTexture(argv[1], & widthTexture, & heightTexture);
-
-   GLfloat g_vertex_buffer_data[288] = {
-    
+ 
+  widthTexture = 40;
+  heightTexture = 40;
+  GLfloat g_vertex_buffer_data[18*widthTexture*heightTexture] = {  
   };
 
   drawTriangles(g_vertex_buffer_data);
@@ -103,8 +104,8 @@ int main(int argc, char * argv[]) {
 		);
 		
 
-		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, 24); // 3 indices starting at 0 -> 1 triangle
+		// Draw the triangle ! 
+		glDrawArrays(GL_TRIANGLES, 0, 6 * widthTexture *heightTexture); // 3 indices starting at 0 -> 1 triangle
 
 		glDisableVertexAttribArray(0);
     glfwSwapBuffers(win);
@@ -142,16 +143,15 @@ void setCamera()
 // Triangles clock-wise direction
 void drawTriangles(GLfloat buffer[])
 { 
-  heightTexture = 2;
-  widthTexture = 2;
+ 
   float x_coord = 0;
   float y_coord = 0;
   for(int i = 0  ; i < widthTexture ; i++)
   { 
-    x_coord = i * 2 / widthTexture;
+    x_coord = i * 2.0 / widthTexture;
     for(int j = 0 ; j < heightTexture; j++)
     {   
-        y_coord = j * 2 /heightTexture;
+        y_coord = j * 2.0 /heightTexture;
 
         buffer[i * heightTexture * 18 + j * 18] = x_coord - 1;
         buffer[i * heightTexture * 18 + j * 18 + 1] = y_coord - 1;
@@ -176,6 +176,7 @@ void drawTriangles(GLfloat buffer[])
         buffer[i * heightTexture * 18 + j * 18 + 15] = x_coord - 1 + 2.0/ widthTexture;
         buffer[i * heightTexture * 18 + j * 18 + 16] = y_coord - 1 ;
         buffer[i * heightTexture * 18 + j * 18 + 17] = 0;
+
         
     }
   }

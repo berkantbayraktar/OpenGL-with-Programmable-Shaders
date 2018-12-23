@@ -24,6 +24,7 @@ out vec3 ToCameraVector; // Vector from Vertex to Camera;
 void main()
 {
 
+   
     // get texture value, compute height
     
     // compute normal vector using also the heights of neighbor vertices
