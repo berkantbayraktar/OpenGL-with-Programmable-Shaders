@@ -1,6 +1,8 @@
 #include "helper.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 static GLFWwindow * win = NULL;
 
@@ -20,18 +22,21 @@ GLuint widthTextureID;
 GLuint heightTextureID;
 GLuint TextureID;
 GLuint heightFactorID;
+GLuint NormalMatrixID;
 
 glm::mat4 Projection;
 glm::mat4 View;
-glm::vec4 camPos;
+glm::vec3 cameraPosition;
 glm::mat4 Model = glm::mat4(1.0f);
+
+GLfloat*  buffer;
 
 
 int widthTexture, heightTexture;
 float heightFactor = 10.0f;
 
 void setCamera();
-void drawTriangles(GLfloat buffer[]);
+void drawTriangles();
 
 static void errorCallback(int error,
   const char * description) {
@@ -73,15 +78,17 @@ int main(int argc, char * argv[]) {
 
 
 
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  
   initShaders();
   glUseProgram(idProgramShader);
   initTexture(argv[1], & widthTexture, & heightTexture);
 
+
+  NormalMatrixID  = glGetUniformLocation(idProgramShader,"normalMatrix");
   MVPID = glGetUniformLocation(idProgramShader,"MVP");
   MVID = glGetUniformLocation(idProgramShader,"MV");
   cameraPositionID = glGetUniformLocation(idProgramShader,"cameraPosition");
@@ -90,21 +97,15 @@ int main(int argc, char * argv[]) {
   TextureID = glGetUniformLocation(idProgramShader,"rgbTexture");
   heightFactorID = glGetUniformLocation(idProgramShader,"heightFactor");
 
-  widthTexture = 400;
-  heightTexture = 400;
-  GLfloat g_vertex_buffer_data[12*widthTexture*heightTexture] = {};
-
+ 
   glUniform1i(TextureID,0);
   glUniform1i(widthTextureID,widthTexture);
-  glUniform1i(widthTextureID,heightTexture);
+  glUniform1i(heightTextureID,heightTexture);
   glUniform1f(heightFactorID,heightFactor);
 
-  drawTriangles(g_vertex_buffer_data);
+  buffer = new GLfloat[12*widthTexture*heightTexture];
+  drawTriangles();
   setCamera();
-	
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
   
 		
@@ -112,35 +113,24 @@ int main(int argc, char * argv[]) {
   // MAIN LOOP
   while (!glfwWindowShouldClose(win)) {
 
+    glViewport(0,0,600,600);
+        
+
     // White background
-	  glClearColor(1,1,1,1);
+	  glClearColor(0,0,0,1);
     glClearDepth(1.0f);
     glClearStencil(0);
-    
     // Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    glUseProgram(idProgramShader);
-    glViewport(0, 0, 600, 600);
+    
     setCamera();
-    // 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 
-    glVertexAttribPointer(
-			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-		
-
-		// Draw the triangle ! 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture *heightTexture); // 3 indices starting at 0 -> 1 triangle
-
-		glDisableVertexAttribArray(0);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3,GL_FLOAT,0,buffer);
+		// Draw the triangle  
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture * heightTexture); // 3 indices starting at 0 -> 1 triangle
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
     glfwSwapBuffers(win);
     glfwPollEvents();
 
@@ -155,67 +145,75 @@ int main(int argc, char * argv[]) {
 void setCamera()
 { 
 
-  camPos = {0.5 *2 -1 , 0.1*2 -1 , -0.25*2 -1, 1};
-  glUniform4f(cameraPositionID,camPos.x,camPos.y,camPos.z,camPos.w);
+  Projection  = glm::perspective(45.0f
+  , 1.0f , 0.1f, 1000.0f);
 
-
-  Projection  = glm::perspective(glm::radians(45.0f)
-  , 1.0f , 0.1f, 100.0f);
+  cameraPosition = glm::vec3(widthTexture / 2, widthTexture / 10, (-1) * (widthTexture / 4));
   
   View = glm::lookAt(
-    glm::vec3(camPos.x,camPos.y,camPos.z /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
-    glm::vec3(0,0,1), // and looks to the z direction
-    glm::vec3(0,-1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+    cameraPosition, // Camera position
+    glm::vec3(cameraPosition + glm::vec3(0,0,1) * 0.1f), // and looks to the z direction
+    glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
 
+  glm::mat4 normalMatrix = glm::inverseTranspose(View);
+  
   glm::mat4 mvp = Projection * View * Model;
   
-  glUniformMatrix4fv(MVPID , 1 , GL_FALSE , &mvp[0][0]);
-
   glm::mat4 mv = View * Model;
   
-  glUniformMatrix4fv(MVID , 1 , GL_FALSE , &mv[0][0]);
-
   
+  glUniformMatrix4fv(MVPID , 1 , GL_FALSE , &mvp[0][0]);
+  glUniformMatrix4fv(MVID , 1 , GL_FALSE , &mv[0][0]);
+  glUniform3fv(cameraPositionID,1,&cameraPosition[0]);
+  glUniformMatrix4fv(NormalMatrixID,1,GL_FALSE,&normalMatrix[0][0]);
+
   
 }
 
 // Triangles clock-wise direction
-void drawTriangles(GLfloat buffer[])
+void drawTriangles()
 { 
- 
-  float x_coord = 0;
-  float y_coord = 0;
+  
   for(int i = 0  ; i < widthTexture ; i++)
   { 
-    x_coord = i * 2.0 / widthTexture;
     for(int j = 0 ; j < heightTexture; j++)
-    {   
-        y_coord = j * 2.0 /heightTexture;
-
-
-        buffer[i * heightTexture * 12 + j *12 ] = x_coord - 1;
-        buffer[i * heightTexture * 12 + j * 12 + 1] = y_coord -1 + 2.0/heightTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 2] = 0;
-
-
-        buffer[i * heightTexture * 12 + j * 12 + 3] = x_coord - 1;
-        buffer[i * heightTexture * 12 + j * 12 + 4] = y_coord - 1;
-        buffer[i * heightTexture * 12 + j * 12 + 5] = 0;
-
-        
-        
-        buffer[i * heightTexture * 12 + j * 12 + 6] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 7] =  y_coord -1 + 2.0/heightTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 8] = 0;
-        
+    {  
       
-        
-        buffer[i * heightTexture * 12 + j * 12 + 9] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 12 + j * 12 + 10] = y_coord-1;
-        buffer[i * heightTexture * 12 + j * 12 + 11] = 0;
+      buffer[i * heightTexture * 12 + j * 12 ] = i;
+      buffer[i * heightTexture * 12 + j * 12 + 1] = 0;
+      buffer[i * heightTexture * 12 + j * 12 + 2] = j+1;
 
+      buffer[i * heightTexture * 12 + j * 12 + 3 ] = i;
+      buffer[i * heightTexture * 12 + j * 12 + 4] = 0;
+      buffer[i * heightTexture * 12 + j * 12 + 5] = j;
+
+      buffer[i * heightTexture * 12 + j * 12 + 6] = i+1;
+      buffer[i * heightTexture * 12 + j * 12 + 7] = 0;
+      buffer[i * heightTexture * 12 + j * 12 + 8] = j+1;
+
+      buffer[i * heightTexture * 12 + j * 12 + 9] = i+1;
+      buffer[i * heightTexture * 12 + j * 12 + 10] = 0;
+      buffer[i * heightTexture * 12 + j * 12 + 11] = j;
         
     }
   }
+
+  GLuint vertexBuffer;
+
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 12 * widthTexture * heightTexture
+  , buffer, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+  glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+	);
+		
 }

@@ -18,6 +18,7 @@ in vec3 vertexNormal; // For Lighting computation
 in vec3 ToLightVector; // Vector from Vertex to Light;
 in vec3 ToCameraVector; // Vector from Vertex to Camera;
 
+
 void main() {
 
   // Assignment Constants below
@@ -33,14 +34,21 @@ void main() {
   vec4 ks = vec4(1.0, 1.0, 1.0, 1.0); // reflectance coeff. for specular
   int specExp = 100; // specular exponent
 
+  float cosTheta = clamp(dot(vertexNormal, ToLightVector),0,1);
+
+  vec3 h = normalize(ToLightVector + ToCameraVector);
+  float cosAlpha = clamp(dot(vertexNormal, h),0,1);
+
+
   // compute ambient component
-  vec4 ambient = vec4(0, 0, 0, 0);
+  vec4 ambient = ka * Ia;
   // compute diffuse component
-  vec4 diffuse = vec4(0, 0, 0, 0);
+  vec4 diffuse = kd * cosTheta * Id;
   // compute specular component
-  vec4 specular = vec4(0, 0, 0, 0);
+  vec4 specular = ks * pow(cosAlpha,specExp) * Is;
 
   // compute the color using the following equation
-  //color = vec4(clamp( textureColor.xyz * vec3(ambient + diffuse + specular), 0.0, 1.0), 1.0);
-  color = texture2D(rgbTexture,textureCoordinate);
+  color = vec4(clamp( textureColor.xyz * vec3(ambient + diffuse + specular), 0.0, 1.0), 1.0);
+  //color =  vec4(clamp( textureColor.xyz , 0.0, 1.0), 1.0);
+
 }
