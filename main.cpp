@@ -72,7 +72,7 @@ int main(int argc, char * argv[]) {
  
   widthTexture = 40;
   heightTexture = 40;
-  GLfloat g_vertex_buffer_data[18*widthTexture*heightTexture] = {  
+  GLfloat g_vertex_buffer_data[12*widthTexture*heightTexture] = {  
   };
 
   drawTriangles(g_vertex_buffer_data);
