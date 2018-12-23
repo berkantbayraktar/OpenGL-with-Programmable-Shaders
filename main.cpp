@@ -105,7 +105,7 @@ int main(int argc, char * argv[]) {
 		
 
 		// Draw the triangle ! 
-		glDrawArrays(GL_TRIANGLES, 0, 6 * widthTexture *heightTexture); // 3 indices starting at 0 -> 1 triangle
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 6 * widthTexture *heightTexture); // 3 indices starting at 0 -> 1 triangle
 
 		glDisableVertexAttribArray(0);
     glfwSwapBuffers(win);
@@ -153,29 +153,27 @@ void drawTriangles(GLfloat buffer[])
     {   
         y_coord = j * 2.0 /heightTexture;
 
-        buffer[i * heightTexture * 18 + j * 18] = x_coord - 1;
-        buffer[i * heightTexture * 18 + j * 18 + 1] = y_coord - 1;
-        buffer[i * heightTexture * 18 + j * 18 + 2] = 0;
 
-        buffer[i * heightTexture * 18 + j * 18 + 3] = x_coord - 1;
-        buffer[i * heightTexture * 18 + j * 18 + 4] = y_coord -1 + 2.0/heightTexture;
-        buffer[i * heightTexture * 18 + j * 18 + 5] = 0;
+        buffer[i * heightTexture * 12 + j *12 ] = x_coord - 1;
+        buffer[i * heightTexture * 12 + j * 12 + 1] = y_coord -1 + 2.0/heightTexture;
+        buffer[i * heightTexture * 12 + j * 12 + 2] = 0;
+
+
+        buffer[i * heightTexture * 12 + j * 12 + 3] = x_coord - 1;
+        buffer[i * heightTexture * 12 + j * 12 + 4] = y_coord - 1;
+        buffer[i * heightTexture * 12 + j * 12 + 5] = 0;
+
         
-        buffer[i * heightTexture * 18 + j * 18 + 6] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 18 + j * 18 + 7] = y_coord -1 + 2.0/heightTexture ;
-        buffer[i * heightTexture * 18 + j * 18 + 8] = 0;
         
-        buffer[i * heightTexture * 18 + j * 18 + 9] = x_coord - 1;
-        buffer[i * heightTexture * 18 + j * 18 + 10] = y_coord - 1 ;
-        buffer[i * heightTexture * 18 + j * 18 + 11] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 6] = x_coord - 1 + 2.0/ widthTexture;
+        buffer[i * heightTexture * 12 + j * 12 + 7] = y_coord -1 + 2.0/heightTexture ;
+        buffer[i * heightTexture * 12 + j * 12 + 8] = 0;
         
-        buffer[i * heightTexture * 18 + j * 18 + 12] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 18 + j * 18 + 13] = y_coord -1 + 2.0/heightTexture ;
-        buffer[i * heightTexture * 18 + j * 18 + 14] = 0;
+      
         
-        buffer[i * heightTexture * 18 + j * 18 + 15] = x_coord - 1 + 2.0/ widthTexture;
-        buffer[i * heightTexture * 18 + j * 18 + 16] = y_coord - 1 ;
-        buffer[i * heightTexture * 18 + j * 18 + 17] = 0;
+        buffer[i * heightTexture * 12 + j * 12 + 9] = x_coord - 1 + 2.0/ widthTexture;
+        buffer[i * heightTexture * 12 + j * 12 + 10] = y_coord - 1 ;
+        buffer[i * heightTexture * 12 + j * 12 + 11] = 0;
 
         
     }
