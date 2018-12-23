@@ -22,10 +22,17 @@ out vec3 ToCameraVector; // Vector from Vertex to Camera;
 
 
 void main()
-{
+{   
+    // We are not sure ,may not work
+    textureCoordinate = (position.xz + vec2(1,1) ) / 2.0;
 
+    // texture or texture2D
+    float y  = 0.2126 * texture2D(rgbTexture,textureCoordinate).r
+                + 0.7152 * texture2D(rgbTexture,textureCoordinate).g
+                + 0.0722 * texture2D(rgbTexture,textureCoordinate).b;
    
     // get texture value, compute height
+    
     
     // compute normal vector using also the heights of neighbor vertices
 
@@ -33,6 +40,6 @@ void main()
    
    // set gl_Position variable correctly to give the transformed vertex position
 
-   gl_Position = MVP * vec4(position,1); // this is a placeholder. It does not correctly set the position 
+   gl_Position = MVP * vec4(position.x, /*heightFactor */ y ,position.z,1); // this is a placeholder. It does not correctly set the position 
     
 }

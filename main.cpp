@@ -16,6 +16,10 @@ GLuint cameraPositionID;
 GLuint MVPID;
 GLuint MVID;
 GLuint vertexbuffer;
+GLuint widthTextureID;
+GLuint heightTextureID;
+GLuint TextureID;
+GLuint heightFactorID;
 
 glm::mat4 Projection;
 glm::mat4 View;
@@ -24,6 +28,7 @@ glm::mat4 Model = glm::mat4(1.0f);
 
 
 int widthTexture, heightTexture;
+float heightFactor = 10.0f;
 
 void setCamera();
 void drawTriangles(GLfloat buffer[]);
@@ -80,11 +85,19 @@ int main(int argc, char * argv[]) {
   MVPID = glGetUniformLocation(idProgramShader,"MVP");
   MVID = glGetUniformLocation(idProgramShader,"MV");
   cameraPositionID = glGetUniformLocation(idProgramShader,"cameraPosition");
- 
+  widthTextureID = glGetUniformLocation(idProgramShader,"widthTexture");
+  heightTextureID = glGetUniformLocation(idProgramShader,"heightTexture");
+  TextureID = glGetUniformLocation(idProgramShader,"rgbTexture");
+  heightFactorID = glGetUniformLocation(idProgramShader,"heightFactor");
+
   widthTexture = 400;
   heightTexture = 400;
-  GLfloat g_vertex_buffer_data[12*widthTexture*heightTexture] = {  
-  };
+  GLfloat g_vertex_buffer_data[12*widthTexture*heightTexture] = {};
+
+  glUniform1i(TextureID,0);
+  glUniform1i(widthTextureID,widthTexture);
+  glUniform1i(widthTextureID,heightTexture);
+  glUniform1f(heightFactorID,heightFactor);
 
   drawTriangles(g_vertex_buffer_data);
   setCamera();
@@ -99,16 +112,17 @@ int main(int argc, char * argv[]) {
   // MAIN LOOP
   while (!glfwWindowShouldClose(win)) {
 
-      // White background
+    // White background
 	  glClearColor(1,1,1,1);
     glClearDepth(1.0f);
     glClearStencil(0);
+    
     // Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glUseProgram(idProgramShader);
-
-        setCamera();
+    glViewport(0, 0, 600, 600);
+    setCamera();
     // 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -140,11 +154,16 @@ int main(int argc, char * argv[]) {
 
 void setCamera()
 { 
-  Projection =- glm::perspective(glm::radians(45.0f)
+
+  camPos = {0.5 *2 -1 , 0.1*2 -1 , -0.25*2 -1, 1};
+  glUniform4f(cameraPositionID,camPos.x,camPos.y,camPos.z,camPos.w);
+
+
+  Projection  = glm::perspective(glm::radians(45.0f)
   , 1.0f , 0.1f, 100.0f);
   
   View = glm::lookAt(
-    glm::vec3(0.5 * 2 - 1 , 0.1* 2 -1 , -0.25 *2 -1 /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
+    glm::vec3(camPos.x,camPos.y,camPos.z /*widthTexture / 2, widthTexture / 10, -widthTexture / 4*/ ), // Camera position
     glm::vec3(0,0,1), // and looks to the z direction
     glm::vec3(0,-1,0)  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
@@ -158,8 +177,7 @@ void setCamera()
   glUniformMatrix4fv(MVID , 1 , GL_FALSE , &mv[0][0]);
 
   
-  camPos = {widthTexture / 2.0, widthTexture / 10.0, - widthTexture / 4.0, 1};
-  glUniform4f(cameraPositionID,camPos.x,camPos.y,camPos.z,camPos.w);
+  
 }
 
 // Triangles clock-wise direction
