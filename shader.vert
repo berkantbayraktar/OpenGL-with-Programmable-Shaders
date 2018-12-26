@@ -65,12 +65,6 @@ void main()
         neighbor_count++;
     }
 
-    
-    
-    
-    
-
-
     for(int i = 0 ; i < neighbor_count; i++ ){
  
         vec3 texture_RGB = texture(rgbTexture, vec2((neighbors[i].x-widthTexture)/widthTexture,(neighbors[i].z-heightTexture)/heightTexture)).xyz;
