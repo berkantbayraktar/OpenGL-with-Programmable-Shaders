@@ -22,18 +22,23 @@ GLuint texture_location;
 GLuint height_factor_location;
 GLuint normal_location;
 
-glm::mat4 normal_matrix;
-glm::vec3 camera_position;
-glm::vec3 camera_gaze;
-glm::mat4 view_matrix;
-glm::mat4 mvp;
-glm::mat4 mv;
 glm::mat4 model_matrix;
+glm::mat4 view_matrix;
 glm::mat4 projection_matrix;
+glm::mat4 normal_matrix;
+glm::mat4 mv;
+glm::mat4 mvp;
+
+glm::vec3 camera_left;
+glm::vec3 camera_up;
+glm::vec3 camera_gaze;
+glm::vec3 camera_position;
+
 
 GLfloat height_factor;
 GLfloat camera_speed;
 
+// vertex array
 GLfloat*  buffer;
 
 bool isFullScreen = false;
@@ -135,8 +140,12 @@ void init()
   camera_speed = 0.0f;
   // camera position
   camera_position = glm::vec3(widthTexture / 2, widthTexture / 10, (-1) * (widthTexture / 4));
-  //camera gaze
+  // camera gaze
   camera_gaze = glm::vec3(0,0,1);
+  // camera up vector
+  camera_up = glm::vec3(0,1,0);
+  // camera left
+  camera_left = glm::cross(camera_up , camera_gaze);
   // model matrix identity matrix initially
   model_matrix = glm::mat4(1);
   // perspective projection
@@ -235,11 +244,12 @@ void render()
 
 void setCamera()
 { 
-  
+  camera_position += camera_speed * camera_gaze;
+
   view_matrix = glm::lookAt(
     camera_position, // Camera position
-    glm::vec3(camera_position + camera_gaze), // and looks to the z direction
-    glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+    camera_position + camera_gaze, // and looks to the z direction
+    camera_up  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
 
   normal_matrix = glm::inverseTranspose(view_matrix);
@@ -283,6 +293,14 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
       // F -> toggle full screen
       case GLFW_KEY_F:
         full_screen();
+        break;
+      // Increase camera speed
+      case GLFW_KEY_U:
+        camera_speed += 0.1;
+        break;
+      // Decrease camera speed
+      case GLFW_KEY_J:
+        camera_speed -= 0.1;
         break;
       default:
         break;
