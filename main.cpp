@@ -195,13 +195,13 @@ void drawTriangles()
       buffer[i * heightTexture * 12 + j * 12 + 1] = 0;
       buffer[i * heightTexture * 12 + j * 12 + 2] = j+1;
 
-      buffer[i * heightTexture * 12 + j * 12 + 3 ] = i;
+      buffer[i * heightTexture * 12 + j * 12 + 3] = i+1;
       buffer[i * heightTexture * 12 + j * 12 + 4] = 0;
-      buffer[i * heightTexture * 12 + j * 12 + 5] = j;
+      buffer[i * heightTexture * 12 + j * 12 + 5] = j+1;
 
-      buffer[i * heightTexture * 12 + j * 12 + 6] = i+1;
+      buffer[i * heightTexture * 12 + j * 12 + 6 ] = i;
       buffer[i * heightTexture * 12 + j * 12 + 7] = 0;
-      buffer[i * heightTexture * 12 + j * 12 + 8] = j+1;
+      buffer[i * heightTexture * 12 + j * 12 + 8] = j;
 
       buffer[i * heightTexture * 12 + j * 12 + 9] = i+1;
       buffer[i * heightTexture * 12 + j * 12 + 10] = 0;
