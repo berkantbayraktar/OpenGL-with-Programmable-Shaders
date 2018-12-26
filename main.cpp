@@ -109,7 +109,7 @@ int main(int argc, char * argv[]) {
   glUseProgram(idProgramShader);
   initTexture(argv[1], & widthTexture, & heightTexture);
 
-  // initialize program
+  // Initialize program
   init();
 
 
@@ -178,6 +178,7 @@ void init()
   glUniform1i(texture_location,0);
   glUniform1i(width_texture_location,widthTexture);
   glUniform1i(height_texture_location,heightTexture);
+  glUniform1f(height_factor_location,height_factor);
 
 }
 
@@ -234,7 +235,7 @@ void render()
         
   //Black background
 	glClearColor(0,0,0,1);
-  glClearDepth(1.0f);
+  glClearDepth(1);
   glClearStencil(0);
 
   // Clear the screen
@@ -324,15 +325,23 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
       case GLFW_KEY_J:
         camera_speed -= 0.1;
         break;
+      // Negative pitch speed
+      // Rotate  up
       case GLFW_KEY_W:
         pitch_speed = -0.001;
         break;
+      // Positive pitch speed
+      // Rotate down
       case GLFW_KEY_S:
         pitch_speed = 0.001;
         break;
+      // Positive yav speed
+      // Rotate left
       case GLFW_KEY_A:
         yaw_speed = 0.001;
         break;
+      // Negative yav speed
+      // Rotate right
       case GLFW_KEY_D:
         yaw_speed = -0.001;
         break;
@@ -340,6 +349,7 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
         break;
     }
   }
+  // Reset speed when the key is released
   if(action == GLFW_RELEASE)
   {
     switch(key)
