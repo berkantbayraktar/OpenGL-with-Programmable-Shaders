@@ -37,6 +37,8 @@ glm::vec3 camera_position;
 
 GLfloat height_factor;
 GLfloat camera_speed;
+GLfloat pitch_speed;
+GLfloat yaw_speed;
 
 // vertex array
 GLfloat*  buffer;
@@ -136,6 +138,8 @@ void init()
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
+  // pitch and yaw speed is initially 0
+  pitch_speed = yaw_speed = 0;
   // height factor 10 initially
   height_factor = 10.0f;
   // camera speed 0 initially
@@ -238,10 +242,11 @@ void render()
 
   setCamera();
 
+  changeYaw(yaw_speed);
+  changePitch(pitch_speed);
+  
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture * heightTexture); // 3 indices starting at 0 -> 1 triangle
   
-  
-  glUniform1f(height_factor_location,height_factor);
 }
 
 void setCamera()
@@ -280,6 +285,7 @@ void changeYaw(GLfloat angle)
 void change_heightfactor(GLfloat amount)
 {
   height_factor += amount;
+  glUniform1f(height_factor_location,height_factor);
 }
 
 void key_callback(GLFWwindow* window, int key , int scancode , int action , int mods)
@@ -319,16 +325,32 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
         camera_speed -= 0.1;
         break;
       case GLFW_KEY_W:
-        changePitch(0.01f);
+        pitch_speed = -0.001;
         break;
       case GLFW_KEY_S:
-        changePitch(-0.01f);
+        pitch_speed = 0.001;
         break;
       case GLFW_KEY_A:
-        changeYaw(0.01f);
+        yaw_speed = 0.001;
         break;
       case GLFW_KEY_D:
-        changeYaw(-0.01f);
+        yaw_speed = -0.001;
+        break;
+      default:
+        break;
+    }
+  }
+  if(action == GLFW_RELEASE)
+  {
+    switch(key)
+    { 
+      case GLFW_KEY_W:
+      case GLFW_KEY_S:
+        pitch_speed = 0;
+        break;
+      case GLFW_KEY_A:
+      case GLFW_KEY_D:
+        yaw_speed = 0;
         break;
       default:
         break;
