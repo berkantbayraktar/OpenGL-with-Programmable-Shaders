@@ -23,7 +23,7 @@ void main() {
 
   // Assignment Constants below
   // get the texture color
-  vec4 textureColor = texture(rgbTexture, textureCoordinate);
+  vec3 textureColor = texture(rgbTexture, textureCoordinate).xyz;
 
   // apply Phong shading by using the following parameters
   vec4 ka = vec4(0.25,0.25,0.25,1.0); // reflectance coeff. for ambient
@@ -46,10 +46,10 @@ void main() {
   float cos_theta = clamp(dot(vertexNormal, ToLightVector),0.0f,1.0f);
   vec4 diffuse = kd * cos_theta * Id;
   
-
+  // Total coefficient multiplier of the texture color 
   vec3 color_coefficient = vec3(ambient + diffuse + specular);
 
   // compute the color using the following equation
-  color = vec4(clamp( textureColor.xyz * color_coefficient, 0.0, 1.0), 1.0);
+  color = vec4(clamp( textureColor * color_coefficient, 0.0, 1.0), 1.0);
 
 }
