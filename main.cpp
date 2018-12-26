@@ -236,10 +236,10 @@ void render()
   //Black background
 	glClearColor(0,0,0,1);
   glClearDepth(1);
-  glClearStencil(0);
+  //glClearStencil(0);
 
   // Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   setCamera();
 
