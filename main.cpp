@@ -16,7 +16,6 @@ GLuint idMVPMatrix;
 
 GLuint cam_pos_location;
 GLuint mvp_location;
-GLuint vertexbuffer;
 GLuint width_texture_location;
 GLuint height_texture_location;
 GLuint texture_location;
@@ -32,13 +31,16 @@ glm::mat4 mv;
 glm::mat4 model_matrix;
 glm::mat4 projection_matrix;
 
-GLfloat heightFactor;
+GLfloat height_factor;
+GLfloat camera_speed;
 
 GLfloat*  buffer;
 
 bool isFullScreen = false;
 int window_width = 600;
 int window_height = 600;
+int window_xpos = 0;
+int window_ypos = 0;
 
 int widthTexture, heightTexture;
 
@@ -128,7 +130,9 @@ void init()
   glCullFace(GL_BACK);
 
   // height factor 10 initially
-  heightFactor = 10.0f;
+  height_factor = 10.0f;
+  // camera speed 0 initially
+  camera_speed = 0.0f;
   // camera position
   camera_position = glm::vec3(widthTexture / 2, widthTexture / 10, (-1) * (widthTexture / 4));
   //camera gaze
@@ -190,7 +194,7 @@ void drawTriangles()
     }
   }
 
-  GLuint vertexBuffer;
+  GLuint vertexbuffer;
 
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -226,7 +230,7 @@ void render()
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture * heightTexture); // 3 indices starting at 0 -> 1 triangle
   
   
-  glUniform1f(height_factor_location,heightFactor);
+  glUniform1f(height_factor_location,height_factor);
 }
 
 void setCamera()
@@ -259,19 +263,24 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
   {
     return;
   }
-  // If a key is pressed
+
+  // If the key is "pressed"
   if(action == GLFW_PRESS)
   {
     switch(key)
     { 
+      // If hit escape close the program
+      case GLFW_KEY_ESCAPE:
+        glfwSetWindowShouldClose(win , GLFW_TRUE);
       // O -> increase height factor
       case GLFW_KEY_O:
-        heightFactor += 0.5f;
+        height_factor += 0.5f;
         break;
       // L -> decrease height factor
       case GLFW_KEY_L:
-        heightFactor -= 0.5f;
+        height_factor -= 0.5f;
         break;
+      // F -> toggle full screen
       case GLFW_KEY_F:
         full_screen();
         break;
@@ -296,6 +305,8 @@ void full_screen()
   { 
     // Store old width and height
     glfwGetWindowSize(win , &window_width , &window_height);
+    // Store old window position
+    glfwGetWindowPos(win , &window_xpos , & window_ypos);
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     glfwSetWindowMonitor(win , monitor, 0 , 0,
@@ -303,7 +314,7 @@ void full_screen()
   }
   else
   {
-    glfwSetWindowMonitor(win , NULL , 0 , 0,
+    glfwSetWindowMonitor(win , NULL , window_xpos , window_ypos,
     window_width, window_height, 0);
   }
   
