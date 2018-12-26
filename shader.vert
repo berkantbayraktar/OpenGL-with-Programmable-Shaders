@@ -24,8 +24,8 @@ vec3 light_pos = vec3(widthTexture/2, widthTexture + heightTexture, heightTextur
 vec3 limunance_coeff = vec3(.2126, .7152, .0722);
 
 
-bool isAvailable(vec3 pos) {
-  return pos.x >= 0  && pos.x < widthTexture  && pos.z >= 0 && pos.z < heightTexture;
+bool isAvailable(vec2 pos) {
+  return pos.x >= 0  && pos.x < widthTexture  && pos.y >= 0 && pos.y < heightTexture;
 }
 
 
@@ -40,41 +40,36 @@ void main()
     vec4 textureColor = texture(rgbTexture, textureCoordinate);
     current_position.y = heightFactor* dot(limunance_coeff, textureColor.xyz);
      
-    if(isAvailable(vec3(position.x - 1, 0 , position.z))){
+    if(isAvailable(vec2(position.x - 1 , position.z))){
         neighbors[neighbor_count] = vec3(position.x - 1, 0 , position.z);
         neighbor_count++;
     }
-    if (isAvailable(vec3(position.x - 1 , 0 , position.z + 1))){
-        neighbors[neighbor_count] = vec3(position.x - 1 , 0 , position.z + 1);
+    if(isAvailable(vec2(position.x , position.z + 1))){
+        neighbors[neighbor_count] = vec3(position.x , 0 , position.z + 1);
         neighbor_count++;
     }
-    if (isAvailable(vec3(position.x - 1 , 0 , position.z - 1))){
+    if(isAvailable(vec2(position.x + 1 , position.z + 1))){
+        neighbors[neighbor_count] = vec3(position.x + 1, 0 , position.z + 1);
+        neighbor_count++;
+    }
+    if(isAvailable(vec2(position.x + 1, position.z))){
+        neighbors[neighbor_count] = vec3(position.x + 1 , 0 , position.z);
+        neighbor_count++;
+    }
+    if(isAvailable(vec2(position.x, position.z - 1))){
+        neighbors[neighbor_count] = vec3(position.x , 0 , position.z - 1);
+        neighbor_count++;
+    }
+    if (isAvailable(vec2(position.x - 1, position.z - 1))){
         neighbors[neighbor_count] = vec3(position.x - 1 , 0 , position.z - 1);
         neighbor_count++;
     }
 
-    if(isAvailable(vec3(position.x , 0 , position.z + 1))){
-        neighbors[neighbor_count] = vec3(position.x , 0 , position.z + 1);
-        neighbor_count++;
-    }
-    if(isAvailable(vec3(position.x , 0 , position.z - 1))){
-        neighbors[neighbor_count] = vec3(position.x , 0 , position.z - 1);
-        neighbor_count++;
-    }
-
-    if(isAvailable(vec3(position.x + 1 , 0 , position.z))){
-        neighbors[neighbor_count] = vec3(position.x + 1 , 0 , position.z);
-        neighbor_count++;
-    }
-    if(isAvailable(vec3(position.x + 1, 0 , position.z - 1))){
-        neighbors[neighbor_count] = vec3(position.x + 1, 0 , position.z - 1);
-        neighbor_count++;
-    }
-    if(isAvailable(vec3(position.x + 1, 0 , position.z + 1))){
-        neighbors[neighbor_count] = vec3(position.x + 1, 0 , position.z + 1);
-        neighbor_count++;
-    }
     
+    
+    
+    
+
 
     for(int i = 0 ; i < neighbor_count; i++ ){
  
@@ -95,6 +90,8 @@ void main()
     vertexNormal = normalize(vec3(normalMatrix*vec4(normal_v,0)));
     ToLightVector = normalize(vec3(MV*vec4(light_pos - current_position, 0)));
     ToCameraVector = normalize(vec3(MV*(vec4(vec3(cameraPosition) - current_position, 0))));
-  
-    gl_Position = MVP*vec4(current_position,1); 
+
+    // set gl_Position variable correctly to give the transformed vertex position
+    gl_Position = MVP*vec4(current_position,1); // this is a placeholder. It does not correctly set the position
+    
 }
