@@ -36,7 +36,7 @@ void main()
     vec3 normal_v = vec3(.0,.0,.0);
 
     vec3 current_position = position;
-    textureCoordinate = vec2(1 - (float(position.x) / (widthTexture+1)), 1 - (float(position.z) / (heightTexture+1)));
+    textureCoordinate = vec2(1 - (position.x) / (widthTexture), 1 - (position.z) / (heightTexture)  );
     vec4 textureColor = texture(rgbTexture, textureCoordinate);
     current_position.y = heightFactor* dot(limunance_coeff, textureColor.xyz);
      
@@ -85,7 +85,6 @@ void main()
     ToLightVector = normalize(vec3(MV*vec4(light_pos - current_position, 0)));
     ToCameraVector = normalize(vec3(MV*(vec4(vec3(cameraPosition) - current_position, 0))));
 
-    // set gl_Position variable correctly to give the transformed vertex position
-    gl_Position = MVP*vec4(current_position,1); // this is a placeholder. It does not correctly set the position
+    gl_Position = MVP*vec4(current_position,1); 
     
 }
