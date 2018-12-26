@@ -246,7 +246,7 @@ void render()
   changeYaw(yaw_speed);
   changePitch(pitch_speed);
   
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture * heightTexture); // 3 indices starting at 0 -> 1 triangle
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture * heightTexture);
   
 }
 
@@ -292,7 +292,7 @@ void change_heightfactor(GLfloat amount)
 void key_callback(GLFWwindow* window, int key , int scancode , int action , int mods)
 { 
   // If any key is not pressed or released
-  if(action != GLFW_RELEASE && action != GLFW_PRESS)
+  if(action != GLFW_RELEASE && action != GLFW_PRESS && action != GLFW_REPEAT)
   {
     return;
   }
