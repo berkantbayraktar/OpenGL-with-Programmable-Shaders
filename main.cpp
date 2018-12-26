@@ -14,20 +14,16 @@ GLuint idJpegTexture;
 GLuint idMVPMatrix;
 
 
-GLuint cameraPositionID;
-GLuint MVPID;
-GLuint MVID;
+GLuint cam_pos_location;
+GLuint mvp_location;
 GLuint vertexbuffer;
-GLuint widthTextureID;
-GLuint heightTextureID;
-GLuint TextureID;
-GLuint heightFactorID;
-GLuint NormalMatrixID;
+GLuint width_texture_location;
+GLuint height_texture_location;
+GLuint texture_location;
+GLuint height_factor_location;
+GLuint normal_location;
 
-glm::mat4 Projection;
-glm::mat4 View;
-glm::vec3 cameraPosition;
-glm::mat4 Model = glm::mat4(1.0f);
+glm::vec3 camera_position;
 
 GLfloat*  buffer;
 
@@ -88,20 +84,20 @@ int main(int argc, char * argv[]) {
   initTexture(argv[1], & widthTexture, & heightTexture);
 
 
-  NormalMatrixID  = glGetUniformLocation(idProgramShader,"normalMatrix");
-  MVPID = glGetUniformLocation(idProgramShader,"MVP");
-  MVID = glGetUniformLocation(idProgramShader,"MV");
-  cameraPositionID = glGetUniformLocation(idProgramShader,"cameraPosition");
-  widthTextureID = glGetUniformLocation(idProgramShader,"widthTexture");
-  heightTextureID = glGetUniformLocation(idProgramShader,"heightTexture");
-  TextureID = glGetUniformLocation(idProgramShader,"rgbTexture");
-  heightFactorID = glGetUniformLocation(idProgramShader,"heightFactor");
+  normal_location = glGetUniformLocation(idProgramShader,"normalMatrix");
+  mvp_location = glGetUniformLocation(idProgramShader,"MVP");
+  idMVPMatrix = glGetUniformLocation(idProgramShader,"MV");
+  cam_pos_location = glGetUniformLocation(idProgramShader,"cameraPosition");
+  width_texture_location = glGetUniformLocation(idProgramShader,"widthTexture");
+  height_texture_location = glGetUniformLocation(idProgramShader,"heightTexture");
+  texture_location = glGetUniformLocation(idProgramShader,"rgbTexture");
+  height_factor_location = glGetUniformLocation(idProgramShader,"heightFactor");
 
  
-  glUniform1i(TextureID,0);
-  glUniform1i(widthTextureID,widthTexture);
-  glUniform1i(heightTextureID,heightTexture);
-  glUniform1f(heightFactorID,heightFactor);
+  glUniform1i(texture_location,0);
+  glUniform1i(width_texture_location,widthTexture);
+  glUniform1i(height_texture_location,heightTexture);
+  glUniform1f(height_factor_location,heightFactor);
 
   buffer = new GLfloat[12*widthTexture*heightTexture];
   drawTriangles();
@@ -125,11 +121,12 @@ int main(int argc, char * argv[]) {
     
     setCamera();
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3,GL_FLOAT,0,buffer);
+    // If doesn't work UNCOMMENT THESEE!!!
+    //glEnableClientState(GL_VERTEX_ARRAY);
+    //glVertexPointer(3,GL_FLOAT,0,buffer);
 		// Draw the triangle  
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4 * widthTexture * heightTexture); // 3 indices starting at 0 -> 1 triangle
-    glDisableClientState(GL_VERTEX_ARRAY);
+    //glDisableClientState(GL_VERTEX_ARRAY);
     
     glfwSwapBuffers(win);
     glfwPollEvents();
@@ -144,29 +141,31 @@ int main(int argc, char * argv[]) {
 
 void setCamera()
 { 
+  // Model matrix is identity , since there is no rotation translation etc.
+  glm::mat4 model_matrix = glm::mat4(1);
 
-  Projection  = glm::perspective(45.0f
+  glm::mat4 projection_matrix  = glm::perspective(45.0f
   , 1.0f , 0.1f, 1000.0f);
 
-  cameraPosition = glm::vec3(widthTexture / 2, widthTexture / 10, (-1) * (widthTexture / 4));
+  camera_position = glm::vec3(widthTexture / 2, widthTexture / 10, (-1) * (widthTexture / 4));
   
-  View = glm::lookAt(
-    cameraPosition, // Camera position
-    glm::vec3(cameraPosition + glm::vec3(0,0,1)), // and looks to the z direction
+  glm::mat4 view_matrix = glm::lookAt(
+    camera_position, // Camera position
+    glm::vec3(camera_position + glm::vec3(0,0,1)), // and looks to the z direction
     glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
   ); 
 
-  glm::mat4 normalMatrix = glm::inverseTranspose(View);
+  glm::mat4 normal_matrix = glm::inverseTranspose(view_matrix);
   
-  glm::mat4 mvp = Projection * View * Model;
+  glm::mat4 mvp = projection_matrix * view_matrix * model_matrix;
   
-  glm::mat4 mv = View * Model;
+  glm::mat4 mv = view_matrix * model_matrix;
   
   
-  glUniformMatrix4fv(MVPID , 1 , GL_FALSE , &mvp[0][0]);
-  glUniformMatrix4fv(MVID , 1 , GL_FALSE , &mv[0][0]);
-  glUniform3fv(cameraPositionID,1,&cameraPosition[0]);
-  glUniformMatrix4fv(NormalMatrixID,1,GL_FALSE,&normalMatrix[0][0]);
+  glUniformMatrix4fv(mvp_location , 1 , GL_FALSE , &mvp[0][0]);
+  glUniformMatrix4fv(idMVPMatrix , 1 , GL_FALSE , &mv[0][0]);
+  glUniform3fv(cam_pos_location,1,&camera_position[0]);
+  glUniformMatrix4fv(normal_location,1,GL_FALSE,&normal_matrix[0][0]);
 
   
 }
@@ -215,5 +214,6 @@ void drawTriangles()
 			0,                  // stride
 			(void*)0            // array buffer offset
 	);
+  delete[] buffer;
 		
 }
