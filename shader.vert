@@ -81,9 +81,10 @@ void main()
     }
 
     normalize(normal_v);
+
+    vertexNormal = normalize(vec3(normalMatrix*vec4(normal_v,0)));
     ToLightVector = normalize(vec3(MV*vec4(light_pos - current_position, 0)));
     ToCameraVector = normalize(vec3(MV*(vec4(vec3(cameraPosition) - current_position, 0))));
-    vertexNormal = normalize(vec3(normalMatrix*vec4(normal_v,0)));
 
     // set gl_Position variable correctly to give the transformed vertex position
     gl_Position = MVP*vec4(current_position,1); // this is a placeholder. It does not correctly set the position
