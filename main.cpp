@@ -236,10 +236,10 @@ void render()
   //Black background
 	glClearColor(0,0,0,1);
   glClearDepth(1);
-  //glClearStencil(0);
+  glClearStencil(0);
 
   // Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   setCamera();
 
@@ -319,31 +319,31 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
         break;
       // Increase camera speed
       case GLFW_KEY_U:
-        camera_speed += 0.1;
+        camera_speed += 0.15;
         break;
       // Decrease camera speed
       case GLFW_KEY_J:
-        camera_speed -= 0.1;
+        camera_speed -= 0.15;
         break;
       // Negative pitch speed
       // Rotate  up
       case GLFW_KEY_W:
-        pitch_speed = -0.001;
+        pitch_speed = -0.005;
         break;
       // Positive pitch speed
       // Rotate down
       case GLFW_KEY_S:
-        pitch_speed = 0.001;
+        pitch_speed = 0.005;
         break;
       // Positive yav speed
       // Rotate left
       case GLFW_KEY_A:
-        yaw_speed = 0.001;
+        yaw_speed = 0.005;
         break;
       // Negative yav speed
       // Rotate right
       case GLFW_KEY_D:
-        yaw_speed = -0.001;
+        yaw_speed = -0.005;
         break;
       default:
         break;
