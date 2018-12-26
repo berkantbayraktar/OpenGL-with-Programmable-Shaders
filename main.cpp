@@ -56,6 +56,8 @@ void setCamera();
 void key_callback(GLFWwindow* window, int key , int scancode , int action , int mods);
 void window_size_callback(GLFWwindow* window, int width, int height);
 void full_screen();
+void changePitch(GLfloat angle);
+void changeYaw(GLfloat angle);
 
 
 static void errorCallback(int error,
@@ -265,6 +267,20 @@ void setCamera()
   glUniformMatrix4fv(normal_location,1,GL_FALSE,&normal_matrix[0][0]);
 }
 
+void changePitch(GLfloat angle)
+{
+  camera_gaze = glm::rotate(camera_gaze, angle , camera_left);
+  camera_up = glm::rotate(camera_up, angle , camera_left);
+}
+void changeYaw(GLfloat angle)
+{ 
+  camera_gaze = glm::rotate(camera_gaze,angle,camera_up);
+  camera_left = glm::rotate(camera_left,angle,camera_up);
+}
+void change_heightfactor(GLfloat amount)
+{
+  height_factor += amount;
+}
 
 void key_callback(GLFWwindow* window, int key , int scancode , int action , int mods)
 { 
@@ -284,11 +300,11 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
         glfwSetWindowShouldClose(win , GLFW_TRUE);
       // O -> increase height factor
       case GLFW_KEY_O:
-        height_factor += 0.5f;
+        change_heightfactor(0.5f);
         break;
       // L -> decrease height factor
       case GLFW_KEY_L:
-        height_factor -= 0.5f;
+        change_heightfactor(-0.5f);
         break;
       // F -> toggle full screen
       case GLFW_KEY_F:
@@ -301,6 +317,18 @@ void key_callback(GLFWwindow* window, int key , int scancode , int action , int 
       // Decrease camera speed
       case GLFW_KEY_J:
         camera_speed -= 0.1;
+        break;
+      case GLFW_KEY_W:
+        changePitch(0.01f);
+        break;
+      case GLFW_KEY_S:
+        changePitch(-0.01f);
+        break;
+      case GLFW_KEY_A:
+        changeYaw(0.01f);
+        break;
+      case GLFW_KEY_D:
+        changeYaw(-0.01f);
         break;
       default:
         break;
