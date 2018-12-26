@@ -48,11 +48,20 @@ void main()
         neighbors[neighbor_count] = vec3(position.x - 1 , 0 , position.z + 1);
         neighbor_count++;
     }
+    if (isAvailable(vec3(position.x - 1 , 0 , position.z - 1))){
+        neighbors[neighbor_count] = vec3(position.x - 1 , 0 , position.z - 1);
+        neighbor_count++;
+    }
 
     if(isAvailable(vec3(position.x , 0 , position.z + 1))){
         neighbors[neighbor_count] = vec3(position.x , 0 , position.z + 1);
         neighbor_count++;
     }
+    if(isAvailable(vec3(position.x , 0 , position.z - 1))){
+        neighbors[neighbor_count] = vec3(position.x , 0 , position.z - 1);
+        neighbor_count++;
+    }
+
     if(isAvailable(vec3(position.x + 1 , 0 , position.z))){
         neighbors[neighbor_count] = vec3(position.x + 1 , 0 , position.z);
         neighbor_count++;
@@ -61,14 +70,15 @@ void main()
         neighbors[neighbor_count] = vec3(position.x + 1, 0 , position.z - 1);
         neighbor_count++;
     }
-    if(isAvailable(vec3(position.x , 0 , position.z - 1))){
-        neighbors[neighbor_count] = vec3(position.x , 0 , position.z - 1);
+    if(isAvailable(vec3(position.x + 1, 0 , position.z + 1))){
+        neighbors[neighbor_count] = vec3(position.x + 1, 0 , position.z + 1);
         neighbor_count++;
     }
+    
 
     for(int i = 0 ; i < neighbor_count; i++ ){
  
-        vec3 texture_RGB = texture(rgbTexture, vec2(abs(neighbors[i].x-widthTexture)/widthTexture,abs(neighbors[i].z-heightTexture)/heightTexture)).xyz;
+        vec3 texture_RGB = texture(rgbTexture, vec2((neighbors[i].x-widthTexture)/widthTexture,(neighbors[i].z-heightTexture)/heightTexture)).xyz;
         neighbors[i].y = heightFactor* dot(texture_RGB,limunance_coeff);
     }
     for(int i = 0 ; i < neighbor_count; i++ ){
