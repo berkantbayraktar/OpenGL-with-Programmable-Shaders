@@ -67,7 +67,7 @@ void main()
 
     for(int i = 0 ; i < neighbor_count; i++ ){
  
-        vec3 texture_RGB = texture(rgbTexture, vec2((neighbors[i].x-widthTexture)/widthTexture,(neighbors[i].z-heightTexture)/heightTexture)).xyz;
+        vec3 texture_RGB = texture(rgbTexture, vec2(abs(neighbors[i].x-widthTexture)/widthTexture,abs(neighbors[i].z-heightTexture)/heightTexture)).xyz;
         neighbors[i].y = heightFactor* dot(texture_RGB,limunance_coeff);
     }
     for(int i = 0 ; i < neighbor_count; i++ ){
